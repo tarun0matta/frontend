@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 
-const Login = () => {
+const ForgotPassword = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
   const BASE_URL = "https://backend-production-9810.up.railway.app";
@@ -34,7 +34,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-xl shadow-md">
-        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Welcome Back</h2>
+        <h2 className="text-3xl font-bold text-center text-blue-600 mb-6">Find your account</h2>
         <form onSubmit={handleLogin} className="space-y-4">
           <input
             type="email"
@@ -44,19 +44,11 @@ const Login = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-md"
             required
           />
-          <input
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md"
-            required
-          />
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
           >
-            Login
+            Search
           </button>
         </form>
         <p className="text-sm text-gray-600 text-center mt-6">
@@ -64,14 +56,15 @@ const Login = () => {
           <Link to="/register" className="text-blue-600 hover:underline">
             Register
           </Link>
-          {' '}| {' '}
-          <Link to="/forgotpassword" className="text-blue-600 hover:underline">
-            Forgot password?
-          </Link>
         </p>
+        <h2 className="text-xl text-center mt-6">
+          <Link to="/login" className="text-blue-600 hover:underline">
+            Login
+          </Link>
+        </h2>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default ForgotPassword;
