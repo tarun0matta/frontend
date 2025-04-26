@@ -74,7 +74,7 @@ const Welcome = () => {
             Streamline operations, boost sales, and gain powerful insights with our cutting-edge point of sale system.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6 mb-12">
-            <AnimatedButton to="/demo" primary>Get a Free Demo</AnimatedButton>
+            <AnimatedButton to="/demo" primary>Log in</AnimatedButton>
             <AnimatedButton to="/register" primary>Get Started</AnimatedButton>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-gray-600">

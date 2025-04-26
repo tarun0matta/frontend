@@ -12,7 +12,7 @@ import Inventory from './dashboard/Inventory';
 import POS from './dashboard/POS';
 import Reports from './dashboard/Reports';
 import Employees from './dashboard/Employees';
-
+import YourAccount from './dashboard/YourAccount';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Shared layout (includes Navbar)
@@ -45,6 +45,7 @@ function App() {
           <Route path="pos" element={<POS />} />
           <Route path="reports" element={<Reports />} />
           <Route path="employees" element={<Employees />} />
+          <Route path="account" element={<YourAccount />} />
         </Route>
 
         {/* Catch-all: redirect to dashboard if unknown route */}
