@@ -1,34 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useSpring, animated, config } from 'react-spring';
 import logoImage from '../assets/pica logo.png';
 
-const Navbar = () => {
-  return (
-    <nav className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
-          <Link to="/" className="flex items-center space-x-3">
-            <img src={logoImage} alt="Infinity POS Logo" className="h-12 w-auto" />
-            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-              Infinity POS
-            </span>
-          </Link>
-          <div className="hidden md:flex items-center space-x-8">
-            <NavLink to="/features">Features</NavLink>
-            <NavLink to="/pricing">Pricing</NavLink>
-            <NavLink to="/about">About Us</NavLink>
-            <NavLink to="/contact">Contact</NavLink>
-          </div>
-          <div className="flex items-center space-x-4">
-            <NavButton to="/login" variant="outline">Log in</NavButton>
-            <NavButton to="/register" variant="solid">Sign up</NavButton>
-          </div>
+const Navbar = () => (
+  <nav className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between items-center h-20">
+        <Link to="/" className="flex items-center space-x-3">
+          <img src={logoImage} alt="Infinity POS Logo" className="h-12 w-auto" />
+          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+            Infinity POS
+          </span>
+        </Link>
+        <div className="hidden md:flex items-center space-x-8">
+          <NavLink to="/features">Features</NavLink>
+          <NavLink to="/pricing">Pricing</NavLink>
+          <NavLink to="/about">About Us</NavLink>
+          <NavLink to="/contact">Contact</NavLink>
+        </div>
+        <div className="flex items-center space-x-4">
+          <NavButton to="/login" variant="outline">Log in</NavButton>
+          <NavButton to="/register" variant="solid">Register</NavButton>
         </div>
       </div>
-    </nav>
-  );
-};
+    </div>
+  </nav>
+);
 
 const NavLink = ({ to, children }) => (
   <Link to={to} className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
@@ -50,23 +47,11 @@ const NavButton = ({ to, children, variant }) => (
 );
 
 const Welcome = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  const fadeIn = useSpring({
-    opacity: isVisible ? 1 : 0,
-    transform: isVisible ? 'translateY(0)' : 'translateY(50px)',
-    config: config.molasses,
-  });
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
       <Navbar />
-      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <animated.div style={fadeIn} className="max-w-4xl w-full text-center">
+      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 mt-20">
+        <div className="max-w-4xl w-full text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
             Transform Your Business with <span className="text-indigo-600">Infinity POS</span>
           </h1>
@@ -74,8 +59,8 @@ const Welcome = () => {
             Streamline operations, boost sales, and gain powerful insights with our cutting-edge point of sale system.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6 mb-12">
-            <AnimatedButton to="/demo" primary>Log in</AnimatedButton>
-            <AnimatedButton to="/register" primary>Get Started</AnimatedButton>
+            <Button to="/login" primary>Log in</Button>
+            <Button to="/register">Get Started</Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-gray-600">
             <FeatureCard
@@ -94,60 +79,94 @@ const Welcome = () => {
               description="Easily manage multiple locations from a single, intuitive dashboard."
             />
           </div>
-        </animated.div>
+        </div>
       </main>
+      <Footer />
     </div>
   );
 };
 
-const AnimatedButton = ({ to, children, primary }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const buttonAnimation = useSpring({
-    scale: isHovered ? 1.05 : 1,
-    shadow: isHovered ? '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' : '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-    config: config.wobbly,
-  });
-
-  return (
-    <Link to={to}>
-      <animated.button
-        style={buttonAnimation}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        className={`px-8 py-4 rounded-full font-semibold text-lg transition duration-300 ${
-          primary 
-            ? 'text-white bg-indigo-600 hover:bg-indigo-700' 
-            : 'text-indigo-600 bg-white hover:bg-indigo-50 border-2 border-indigo-600'
-        }`}
-      >
-        {children}
-      </animated.button>
-    </Link>
-  );
-};
-
-const FeatureCard = ({ icon, title, description }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const cardAnimation = useSpring({
-    transform: isHovered ? 'translateY(-5px)' : 'translateY(0)',
-    boxShadow: isHovered ? '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)' : '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-    config: config.wobbly,
-  });
-
-  return (
-    <animated.div
-      style={cardAnimation}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="bg-white p-6 rounded-lg"
+const Button = ({ to, children, primary }) => (
+  <Link to={to}>
+    <button
+      className={`px-8 py-4 rounded-full font-semibold text-lg transition duration-300 ${
+        primary ? 'text-white bg-indigo-600 hover:bg-indigo-700' : 'text-indigo-600 border-2 border-indigo-600 hover:bg-indigo-50'
+      }`}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
-      </svg>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
-    </animated.div>
+      {children}
+    </button>
+  </Link>
+);
+
+const FeatureCard = ({ icon, title, description }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mb-4 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
+    </svg>
+    <h3 className="text-xl font-semibold mb-2">{title}</h3>
+    <p className="text-gray-600">{description}</p>
+  </div>
+);
+
+const Footer = () => {
+  return (
+    <footer className="bg-gray-800 text-white py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="col-span-2">
+            <h3 className="text-2xl font-bold mb-4">About Infinity POS</h3>
+            <p className="text-gray-300 mb-4">
+              Infinity POS is a versatile, cloud-based point of sale system designed to empower businesses of all sizes. Our mission is to provide a comprehensive, user-friendly solution that streamlines operations, boosts sales, and offers valuable insights.
+            </p>
+            <p className="text-gray-300 mb-4">
+              Whether you're running a bustling café, a trendy boutique, a multi-location restaurant chain, or a high-volume retail store, Infinity POS adapts to your unique needs. Our system is perfect for:
+            </p>
+            <ul className="text-gray-300 list-disc list-inside mb-4">
+              <li>Restaurants and cafes</li>
+              <li>Retail stores</li>
+              <li>Bars and nightclubs</li>
+              <li>Salons and spas</li>
+              <li>Grocery and convenience stores</li>
+              <li>Food trucks and pop-up shops</li>
+            </ul>
+            <p className="text-gray-300">
+              Founded in 2023, we've rapidly grown to become a trusted partner for thousands of businesses across diverse industries. Our commitment to innovation and customer success drives us to continually enhance our platform, ensuring you stay ahead in today's competitive market.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2">
+              <li><Link to="/features" className="text-gray-300 hover:text-white transition">Features</Link></li>
+              <li><Link to="/pricing" className="text-gray-300 hover:text-white transition">Pricing</Link></li>
+              <li><Link to="/about" className="text-gray-300 hover:text-white transition">About Us</Link></li>
+              <li><Link to="/contact" className="text-gray-300 hover:text-white transition">Contact</Link></li>
+              <li><Link to="/blog" className="text-gray-300 hover:text-white transition">Blog</Link></li>
+              <li><Link to="/support" className="text-gray-300 hover:text-white transition">Support</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Connect With Us</h4>
+            <ul className="space-y-2">
+              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-facebook-f mr-2"></i> Facebook</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-twitter mr-2"></i> Twitter</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-linkedin-in mr-2"></i> LinkedIn</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-instagram mr-2"></i> Instagram</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-youtube mr-2"></i> YouTube</a></li>
+            </ul>
+            <h4 className="text-lg font-semibold mt-6 mb-4">Newsletter</h4>
+            <p className="text-gray-300 mb-2">Stay updated with our latest features and industry news.</p>
+            <form className="flex">
+              <input type="email" placeholder="Enter your email" className="px-3 py-2 bg-gray-700 text-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+              <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700 transition">Subscribe</button>
+            </form>
+          </div>
+        </div>
+        <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300">
+          <p>&copy; 2023 Infinity POS. All rights reserved. | <Link to="/privacy" className="hover:text-white">Privacy Policy</Link> | <Link to="/terms" className="hover:text-white">Terms of Service</Link></p>
+        </div>
+      </div>
+    </footer>
   );
-};
+}
 
 export default Welcome;
