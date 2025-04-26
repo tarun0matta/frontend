@@ -85,7 +85,8 @@ const Register = () => {
         headers: { 'Content-Type': 'application/json' }
       });
       console.log('✅ Registered:', res.data);
-      navigate('/business-details');
+      // Redirect to the plans page instead of business-details
+      navigate('/plans');
     } catch (err) {
       console.error('❌ Registration error:', err);
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
@@ -195,7 +196,7 @@ const Register = () => {
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
                 disabled={loading}
               >
-                {loading ? 'Creating your account...' : 'Get Started'}
+                {loading ? 'Creating your account...' : 'Create Account'}
               </button>
             </div>
           </form>
