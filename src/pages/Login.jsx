@@ -24,7 +24,7 @@ const Navbar = () => {
           </div>
           <div className="flex items-center space-x-4">
             <NavButton to="/login" variant="outline">Log in</NavButton>
-            <NavButton to="/register" variant="solid">Sign up</NavButton>
+            <NavButton to="/plans" variant="solid">Sign up</NavButton>
           </div>
         </div>
       </div>
