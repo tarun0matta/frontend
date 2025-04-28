@@ -6,6 +6,7 @@ import Plans from './pages/Plans';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './dashboard/Dashboard';
+import Support from './pages/Support';
 import DashboardHome from './dashboard/DashboardHome'; // Import the new DashboardHome component
 import POS from './dashboard/POS';
 import Inventory from './dashboard/Inventory';
@@ -26,7 +27,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-
+        <Route path="/support" element={<Support />} /> {/* Add this line */}
         {/* Protected routes */}
         <Route path="/dashboard" element={
           <ProtectedRoute>

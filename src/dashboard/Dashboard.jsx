@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FiHome, FiBox, FiShoppingCart, FiBarChart2, FiUsers, FiLogOut, FiMenu,
-  FiUser, FiInfo, FiPhoneCall
+  FiUser
 } from 'react-icons/fi';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -112,12 +112,10 @@ const Dashboard = () => {
             </Link>
             <div className="flex items-center space-x-4">
               <Link to="/about" className="text-gray-600 hover:text-gray-900 flex items-center">
-                <FiInfo className="mr-1" />
-                About Us
+              
               </Link>
-              <Link to="/contact" className="text-gray-600 hover:text-gray-900 flex items-center">
-                <FiPhoneCall className="mr-1" />
-                Contact
+              <Link to="/support" className="text-gray-600 hover:text-gray-900 flex items-center">
+              Support
               </Link>
             </div>
           </div>
