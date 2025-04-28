@@ -1,55 +1,89 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiShoppingCart, FiBarChart2, FiPackage, FiClock, FiCloud, FiShield } from 'react-icons/fi';
+import { FiShoppingCart, FiBarChart2, FiPackage, FiClock, FiCloud, FiShield, FiDollarSign, FiBox } from 'react-icons/fi';
+import { AuthContext } from '../context/AuthContext';
 
 const DashboardHome = ({ dashboardData }) => {
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
-  const quickActions = [
-    { 
-      label: 'New Sale', 
-      icon: <FiShoppingCart size={20} />, 
-      color: 'bg-indigo-600 hover:bg-indigo-700',
-      action: () => navigate('/dashboard/pos')
-    },
-    { 
-      label: 'View Reports', 
-      icon: <FiBarChart2 size={20} />, 
-      color: 'bg-purple-600 hover:bg-purple-700',
-      action: () => navigate('/dashboard/reports')
-    },
-    { 
-      label: 'Manage Inventory', 
-      icon: <FiPackage size={20} />, 
-      color: 'bg-blue-600 hover:bg-blue-700',
-      action: () => navigate('/dashboard/inventory')
-    },
-  ];
+  const cashierContent = () => (
+    <div className="space-y-8">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-semibold mb-6">Welcome, Cashier!</h2>
+        <p className="text-gray-600 mb-6">
+          Process sales quickly and efficiently with our easy-to-use POS system.
+        </p>
+        <button
+          onClick={() => navigate('/dashboard/pos')}
+          className="flex items-center justify-center space-x-2 px-4 py-3 rounded-md text-white transition bg-indigo-600 hover:bg-indigo-700"
+        >
+          <FiShoppingCart size={20} />
+          <span>New Sale</span>
+        </button>
+      </div>
 
-  const features = [
-    {
-      title: "Real-time Inventory Management",
-      description: "Keep track of your stock levels in real-time. Receive low stock alerts and automate reordering processes.",
-      icon: <FiClock size={40} className="text-indigo-500" />,
-    },
-    {
-      title: "Cloud-based Point of Sale",
-      description: "Access your POS system from anywhere, on any device. Process transactions quickly and securely.",
-      icon: <FiCloud size={40} className="text-blue-500" />,
-    },
-    {
-      title: "Advanced Reporting & Analytics",
-      description: "Gain insights into your business performance with detailed reports and customizable dashboards.",
-      icon: <FiBarChart2 size={40} className="text-green-500" />,
-    },
-    {
-      title: "Secure User Management",
-      description: "Control access to your system with role-based permissions and multi-factor authentication.",
-      icon: <FiShield size={40} className="text-purple-500" />,
-    },
-  ];
+      {dashboardData && (
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">Today's Stats</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <MetricCard title="Sales Today" value={`${dashboardData.salesToday.toFixed(2)}`} />
+            <MetricCard title="Transactions" value={dashboardData.transactionsToday} />
+          </div>
+        </div>
+      )}
 
-  return (
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-2xl font-semibold mb-6">Quick Tips</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Always greet customers with a smile</li>
+          <li>Ensure the correct items are scanned</li>
+          <li>Offer assistance with bagging</li>
+          <li>Thank the customer for their purchase</li>
+        </ul>
+      </div>
+    </div>
+  );
+
+  const stockerContent = () => (
+    <div className="space-y-8">
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h2 className="text-2xl font-semibold mb-6">Welcome, Stocker!</h2>
+        <p className="text-gray-600 mb-6">
+          Manage inventory efficiently and keep track of stock levels.
+        </p>
+        <button
+          onClick={() => navigate('/dashboard/inventory')}
+          className="flex items-center justify-center space-x-2 px-4 py-3 rounded-md text-white transition bg-blue-600 hover:bg-blue-700"
+        >
+          <FiBox size={20} />
+          <span>Manage Inventory</span>
+        </button>
+      </div>
+
+      {dashboardData && (
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="text-xl font-semibold mb-4">Inventory Overview</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <MetricCard title="Low Stock Items" value={dashboardData.lowStockItems} />
+            <MetricCard title="Total Items" value={dashboardData.totalItems} />
+          </div>
+        </div>
+      )}
+
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-2xl font-semibold mb-6">Restocking Tasks</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Check low stock items</li>
+          <li>Update inventory counts</li>
+          <li>Organize storage areas</li>
+          <li>Prepare reorder requests</li>
+        </ul>
+      </div>
+    </div>
+  );
+
+  const ownerContent = () => (
     <div className="space-y-8">
       <div className="bg-white rounded-lg shadow-md p-6">
         <h2 className="text-2xl font-semibold mb-6">Welcome to Infinity POS</h2>
@@ -101,6 +135,66 @@ const DashboardHome = ({ dashboardData }) => {
       </div>
     </div>
   );
+
+  const quickActions = [
+    { 
+      label: 'New Sale', 
+      icon: <FiShoppingCart size={20} />, 
+      color: 'bg-indigo-600 hover:bg-indigo-700',
+      action: () => navigate('/dashboard/pos')
+    },
+    { 
+      label: 'View Reports', 
+      icon: <FiBarChart2 size={20} />, 
+      color: 'bg-purple-600 hover:bg-purple-700',
+      action: () => navigate('/dashboard/reports')
+    },
+    { 
+      label: 'Manage Inventory', 
+      icon: <FiPackage size={20} />, 
+      color: 'bg-blue-600 hover:bg-blue-700',
+      action: () => navigate('/dashboard/inventory')
+    },
+  ];
+
+  const features = [
+    {
+      title: "Real-time Inventory Management",
+      description: "Keep track of your stock levels in real-time. Receive low stock alerts and automate reordering processes.",
+      icon: <FiClock size={40} className="text-indigo-500" />,
+    },
+    {
+      title: "Cloud-based Point of Sale",
+      description: "Access your POS system from anywhere, on any device. Process transactions quickly and securely.",
+      icon: <FiCloud size={40} className="text-blue-500" />,
+    },
+    {
+      title: "Advanced Reporting & Analytics",
+      description: "Gain insights into your business performance with detailed reports and customizable dashboards.",
+      icon: <FiBarChart2 size={40} className="text-green-500" />,
+    },
+    {
+      title: "Secure User Management",
+      description: "Control access to your system with role-based permissions and multi-factor authentication.",
+      icon: <FiShield size={40} className="text-purple-500" />,
+    },
+  ];
+
+  const renderContent = () => {
+    switch (user.role) {
+      case 'cashier':
+        return cashierContent();
+      case 'stocker':
+        return stockerContent();
+      case 'owner':
+      case 'manager':
+        return ownerContent();
+      default:
+        return <div>Unknown user role</div>;
+    }
+  };
+
+  return renderContent();
 };
 
 const MetricCard = ({ title, value }) => (
