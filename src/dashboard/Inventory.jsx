@@ -232,55 +232,65 @@ const Inventory = () => {
             {loading ? (
               <p className="text-gray-600">Loading inventory...</p>
             ) : filteredInventory.length > 0 ? (
-              <table className="w-full text-sm border border-gray-300 rounded-md overflow-hidden">
-                <thead className="bg-gray-100">
-                  <tr>
-                    {['Item', 'Qty', 'Price', 'Barcode', 'Created', 'Actions'].map(header => (
-                      <th key={header} className="px-4 py-2">{header}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredInventory.map(item => (
-                    <tr key={item.id} className={editingItem && editingItem.id === item.id ? 'bg-blue-50' : ''}>
-                      <td className="px-4 py-2">
-                        {editingItem && editingItem.id === item.id ? (
-                          <input type="text" value={editingItem.item_name} onChange={(e) => setEditingItem(prev => ({ ...prev, item_name: e.target.value }))} className="w-full px-2 py-1 border rounded" />
-                        ) : item.item_name}
-                      </td>
-                      <td className="px-4 py-2">
-                        {editingItem && editingItem.id === item.id ? (
-                          <input type="number" value={editingItem.quantity} onChange={(e) => setEditingItem(prev => ({ ...prev, quantity: e.target.value }))} className="w-full px-2 py-1 border rounded" />
-                        ) : item.quantity}
-                      </td>
-                      <td className="px-4 py-2">
-                        {editingItem && editingItem.id === item.id ? (
-                          <input type="number" value={editingItem.price} onChange={(e) => setEditingItem(prev => ({ ...prev, price: e.target.value }))} className="w-full px-2 py-1 border rounded" />
-                        ) : item.price}
-                      </td>
-                      <td className="px-4 py-2">
-                        {editingItem && editingItem.id === item.id ? (
-                          <input type="text" value={editingItem.barcode || ''} onChange={(e) => setEditingItem(prev => ({ ...prev, barcode: e.target.value }))} className="w-full px-2 py-1 border rounded" />
-                        ) : (item.barcode || '-')}
-                      </td>
-                      <td className="px-4 py-2">{new Date(item.created_at).toLocaleString()}</td>
-                      <td className="px-4 py-2">
-                        {editingItem && editingItem.id === item.id ? (
-                          <>
-                            <button onClick={() => handleUpdateItem(item.id)} className="text-green-600 hover:underline" disabled={loading}>Save</button>
-                            <button onClick={handleCancelEdit} className="text-gray-600 hover:underline ml-2">Cancel</button>
-                          </>
-                        ) : (
-                          <>
-                            <button onClick={() => handleEditClick(item)} className="text-blue-600 hover:underline"><FiEdit2 className="inline" /></button>
-                            <button onClick={() => handleDeleteItem(item.id)} className="text-red-600 hover:underline ml-2"><FiTrash2 className="inline" /></button>
-                          </>
-                        )}
-                      </td>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left text-gray-500">
+                  <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                      {['Item', 'Qty', 'Price', 'Barcode', 'Created', 'Actions'].map(header => (
+                        <th key={header} scope="col" className="px-6 py-3">
+                          {header}
+                        </th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {filteredInventory.map((item, index) => (
+                      <tr key={item.id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b hover:bg-gray-100 ${editingItem && editingItem.id === item.id ? 'bg-blue-50' : ''}`}>
+                        <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                          {editingItem && editingItem.id === item.id ? (
+                            <input type="text" value={editingItem.item_name} onChange={(e) => setEditingItem(prev => ({ ...prev, item_name: e.target.value }))} className="w-full px-2 py-1 border rounded" />
+                          ) : item.item_name}
+                        </td>
+                        <td className="px-6 py-4">
+                          {editingItem && editingItem.id === item.id ? (
+                            <input type="number" value={editingItem.quantity} onChange={(e) => setEditingItem(prev => ({ ...prev, quantity: e.target.value }))} className="w-full px-2 py-1 border rounded" />
+                          ) : item.quantity}
+                        </td>
+                        <td className="px-6 py-4">
+                          {editingItem && editingItem.id === item.id ? (
+                            <input type="number" value={editingItem.price} onChange={(e) => setEditingItem(prev => ({ ...prev, price: e.target.value }))} className="w-full px-2 py-1 border rounded" />
+                          ) : `${parseFloat(item.price).toFixed(2)}`}
+                        </td>
+                        <td className="px-6 py-4">
+                          {editingItem && editingItem.id === item.id ? (
+                            <input type="text" value={editingItem.barcode || ''} onChange={(e) => setEditingItem(prev => ({ ...prev, barcode: e.target.value }))} className="w-full px-2 py-1 border rounded" />
+                          ) : (item.barcode || '-')}
+                        </td>
+                        <td className="px-6 py-4">
+                          {new Date(item.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4">
+                          {editingItem && editingItem.id === item.id ? (
+                            <>
+                              <button onClick={() => handleUpdateItem(item.id)} className="font-medium text-blue-600 hover:underline mr-2" disabled={loading}>Save</button>
+                              <button onClick={handleCancelEdit} className="font-medium text-gray-600 hover:underline">Cancel</button>
+                            </>
+                          ) : (
+                            <>
+                              <button onClick={() => handleEditClick(item)} className="font-medium text-blue-600 hover:underline mr-2">
+                                <FiEdit2 className="inline mr-1" /> Edit
+                              </button>
+                              <button onClick={() => handleDeleteItem(item.id)} className="font-medium text-red-600 hover:underline">
+                                <FiTrash2 className="inline mr-1" /> Delete
+                              </button>
+                            </>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             ) : (
               <p className="text-gray-600">No inventory items found.</p>
             )}
