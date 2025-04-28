@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import logoImage from '../assets/pica logo.png';
 
-const Navbar = () => (
+const Navbar = ({ scrollToFooter }) => (
   <nav className="bg-white shadow-lg fixed top-0 left-0 right-0 z-50">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center h-20">
@@ -13,25 +13,36 @@ const Navbar = () => (
           </span>
         </Link>
         <div className="hidden md:flex items-center space-x-8">
-          <NavLink to="/features">Features</NavLink>
-          <NavLink to="/pricing">Pricing</NavLink>
-          <NavLink to="/about">About Us</NavLink>
-          <NavLink to="/support">Support</NavLink> {/* Add this line */}
+          <NavLink to="/plans">Pricing</NavLink>
+          <NavLink onClick={() => scrollToFooter('about')}>About Us</NavLink>
+          <NavLink onClick={() => scrollToFooter('contact')}>Contact</NavLink>
         </div>
         <div className="flex items-center space-x-4">
           <NavButton to="/login" variant="outline">Log in</NavButton>
-          <NavButton to="/register" variant="solid">Register</NavButton>
+          <NavButton to="/plans" variant="solid">Register</NavButton>
         </div>
       </div>
     </div>
   </nav>
 );
 
-const NavLink = ({ to, children }) => (
-  <Link to={to} className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
-    {children}
-  </Link>
-);
+const NavLink = ({ to, children, onClick }) => {
+  if (onClick) {
+    return (
+      <button
+        onClick={onClick}
+        className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
+      >
+        {children}
+      </button>
+    );
+  }
+  return (
+    <Link to={to} className="text-gray-700 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out">
+      {children}
+    </Link>
+  );
+};
 
 const NavButton = ({ to, children, variant }) => (
   <Link
@@ -47,9 +58,18 @@ const NavButton = ({ to, children, variant }) => (
 );
 
 const Welcome = () => {
+  const footerRef = useRef(null);
+
+  const scrollToFooter = (section) => {
+    if (footerRef.current) {
+      footerRef.current.scrollIntoView({ behavior: 'smooth' });
+      // You can add logic here to scroll to specific sections within the footer if needed
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
-      <Navbar />
+      <Navbar scrollToFooter={scrollToFooter} />
       <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 mt-20">
         <div className="max-w-4xl w-full text-center">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
@@ -60,7 +80,7 @@ const Welcome = () => {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6 mb-12">
             <Button to="/login" primary>Log in</Button>
-            <Button to="/register">Get Started</Button>
+            <Button to="/plans">Get Started</Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-gray-600">
             <FeatureCard
@@ -81,7 +101,7 @@ const Welcome = () => {
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer ref={footerRef} />
     </div>
   );
 };
@@ -108,9 +128,9 @@ const FeatureCard = ({ icon, title, description }) => (
   </div>
 );
 
-const Footer = () => {
+const Footer = React.forwardRef((props, ref) => {
   return (
-    <footer className="bg-gray-800 text-white py-12">
+    <footer ref={ref} className="bg-gray-800 text-white py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-2">
@@ -138,6 +158,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link to="/features" className="text-gray-300 hover:text-white transition">Features</Link></li>
               <li><Link to="/pricing" className="text-gray-300 hover:text-white transition">Pricing</Link></li>
+              <li><Link to="/about" className="text-gray-300 hover:text-white transition">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-300 hover:text-white transition">Contact</Link></li>
               <li><Link to="/support" className="text-gray-300 hover:text-white transition">Support</Link></li>
             </ul>
@@ -157,6 +178,6 @@ const Footer = () => {
       </div>
     </footer>
   );
-}
+});
 
 export default Welcome;
