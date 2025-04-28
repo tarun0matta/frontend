@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BarcodeScannerComponent from 'react-qr-barcode-scanner';
-import { FiSearch, FiCamera, FiShoppingCart, FiTrash2, FiPlus, FiMinus } from 'react-icons/fi';
+import { FiSearch, FiCamera, FiShoppingCart, FiTrash2, FiPlus, FiMinus, FiDownload } from 'react-icons/fi';
+import jsPDF from 'jspdf';
 
 const API_BASE = 'https://backend-production-9810.up.railway.app';
 
@@ -26,7 +27,6 @@ const POS = () => {
       const res = await axios.post(`${API_BASE}/inventory/search`, { query }, {
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       });
-      console.log('Search results:', res.data);
       setSearchResults(Array.isArray(res.data) ? res.data : [res.data]);
     } catch (err) {
       console.error('Search error:', err);
@@ -47,12 +47,14 @@ const POS = () => {
   }, [query]);
 
   const addItemToCart = (item) => {
-    const existing = cart.find((i) => i.barcode === item.barcode);
-    if (existing) {
-      setCart(cart.map((i) => i.barcode === item.barcode ? { ...i, quantity: i.quantity + 1 } : i));
-    } else {
-      setCart([...cart, { ...item, quantity: 1 }]);
-    }
+    setCart(prevCart => {
+      const existing = prevCart.find((i) => i.barcode === item.barcode);
+      if (existing) {
+        return prevCart.map((i) => i.barcode === item.barcode ? { ...i, quantity: i.quantity + 1 } : i);
+      } else {
+        return [...prevCart, { ...item, quantity: 1 }];
+      }
+    });
     setQuery('');
     setSearchResults([]);
   };
@@ -68,13 +70,15 @@ const POS = () => {
   };
 
   const handleQuantityChange = (index, change) => {
-    const updated = [...cart];
-    updated[index].quantity = Math.max(1, updated[index].quantity + change);
-    setCart(updated);
+    setCart(prevCart => {
+      const updated = [...prevCart];
+      updated[index].quantity = Math.max(1, updated[index].quantity + change);
+      return updated;
+    });
   };
 
   const handleRemoveItem = (index) => {
-    setCart(cart.filter((_, i) => i !== index));
+    setCart(prevCart => prevCart.filter((_, i) => i !== index));
   };
 
   const handleConfirmSale = async () => {
@@ -97,6 +101,48 @@ const POS = () => {
     }
   };
 
+  const generateBill = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    
+    doc.setFontSize(20);
+    doc.text("Sales Receipt", pageWidth / 2, 20, { align: "center" });
+    
+    doc.setFontSize(12);
+    doc.text(`Date: ${new Date().toLocaleString()}`, 20, 30);
+    
+    let yPos = 40;
+    doc.setFontSize(14);
+    doc.text("Item", 20, yPos);
+    doc.text("Qty", 100, yPos);
+    doc.text("Price", 130, yPos);
+    doc.text("Total", 160, yPos);
+    
+    yPos += 10;
+    doc.setFontSize(12);
+    cart.forEach((item) => {
+      doc.text(item.item_name, 20, yPos);
+      doc.text(item.quantity.toString(), 100, yPos);
+      doc.text(`${item.price.toFixed(2)}`, 130, yPos);
+      doc.text(`${(item.quantity * item.price).toFixed(2)}`, 160, yPos);
+      yPos += 10;
+    });
+    
+    const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const tax = subtotal * 0.1;
+    const total = subtotal + tax;
+    
+    yPos += 10;
+    doc.text(`Subtotal: ${subtotal.toFixed(2)}`, 120, yPos);
+    yPos += 10;
+    doc.text(`Tax (10%): ${tax.toFixed(2)}`, 120, yPos);
+    yPos += 10;
+    doc.setFontSize(14);
+    doc.text(`Total: ${total.toFixed(2)}`, 120, yPos);
+    
+    doc.save("sales_receipt.pdf");
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       <div className="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
@@ -104,7 +150,6 @@ const POS = () => {
           <div className="md:flex-1 p-6">
             <h2 className="text-3xl font-bold text-gray-800 mb-6">POS Terminal</h2>
             
-            {/* Search / Scan */}
             <div className="flex items-center gap-4 mb-6">
               <div className="relative flex-1">
                 <input
@@ -116,7 +161,6 @@ const POS = () => {
                 />
                 <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 
-                {/* Dropdown for search results */}
                 {searchResults.length > 0 && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
                     {searchResults.map((item, index) => (
@@ -139,7 +183,6 @@ const POS = () => {
               </button>
             </div>
 
-            {/* Scanner */}
             {scanning && (
               <div className="mb-6">
                 <BarcodeScannerComponent width={500} height={300} onUpdate={handleScan} />
@@ -152,7 +195,6 @@ const POS = () => {
               </div>
             )}
 
-            {/* Cart Preview */}
             <div className="bg-gray-50 p-6 rounded-lg">
               <h3 className="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
                 <FiShoppingCart className="mr-2" /> Cart Preview
@@ -205,7 +247,6 @@ const POS = () => {
             </div>
           </div>
 
-          {/* Total and Confirm Section */}
           <div className="md:w-1/3 bg-gray-800 p-6 text-white">
             <h3 className="text-2xl font-semibold mb-6">Order Summary</h3>
             <div className="space-y-4">
@@ -229,6 +270,12 @@ const POS = () => {
               className="mt-8 w-full bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition duration-300"
             >
               Confirm Sale
+            </button>
+            <button
+              onClick={generateBill}
+              className="mt-4 w-full bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition duration-300"
+            >
+              <FiDownload className="mr-2" /> Download Bill
             </button>
           </div>
         </div>

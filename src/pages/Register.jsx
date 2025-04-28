@@ -85,8 +85,10 @@ const Register = () => {
         headers: { 'Content-Type': 'application/json' }
       });
       console.log('✅ Registered:', res.data);
-      // Redirect to the plans page instead of business-details
-      navigate('/plans');
+      // Show success message
+      alert('Registration successful! Please log in.');
+      // Redirect to the login page
+      navigate('/login');
     } catch (err) {
       console.error('❌ Registration error:', err);
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
