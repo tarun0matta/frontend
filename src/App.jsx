@@ -1,64 +1,57 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-
-// Public pages
+import { useContext } from 'react';
+import { AuthContext } from './context/AuthContext';
 import Welcome from './pages/Welcome';
 import Plans from './pages/Plans';
-import Register from './pages/Register';
 import Login from './pages/Login';
-import ForgotPassword from './pages/ForgotPassword';
-
-// Dashboard & subpages
-import DashboardLayout from './dashboard/Dashboard';
-import Inventory from './dashboard/Inventory';
+import Register from './pages/Register';
+import Dashboard from './dashboard/Dashboard';
+import DashboardHome from './dashboard/DashboardHome'; // Import the new DashboardHome component
 import POS from './dashboard/POS';
+import Inventory from './dashboard/Inventory';
 import Reports from './dashboard/Reports';
 import Employees from './dashboard/Employees';
+import Unauthorized from './dashboard/Unauthorized';
+import ProtectedRoute from './components/ProtectedRoute'; // Import corrected ProtectedRoute
 import YourAccount from './dashboard/YourAccount';
-
-// Components
-import ProtectedRoute from './components/ProtectedRoute';
-import MainLayout from './components/MainLayout';
-import ChatbotAssistant from './components/ChatbotAssistant';
-
 function App() {
+  const { user } = useContext(AuthContext);
+
   return (
     <Router>
-      <div className="App">
-        <Routes>
-          {/* Public pages with Navbar */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Welcome />} />
-            <Route path="/plans" element={<Plans />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgotpassword" element={<ForgotPassword />} />
-          </Route>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" element={<Welcome />} />
+        <Route path="/plans" element={<Plans />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* Protected dashboard layout */}
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<div>Welcome to the Dashboard!</div>} />
-            <Route path="inventory" element={<Inventory />} />
-            <Route path="pos" element={<POS />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="employees" element={<Employees />} />
-            <Route path="account" element={<YourAccount />} />
-          </Route>
-
-          {/* Catch-all: redirect to home if unknown route */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-
-        {/* Chatbot Assistant - available on all pages */}
-        <ChatbotAssistant />
-      </div>
+        {/* Protected routes */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }>
+          <Route index element={<DashboardHome />} />
+          <Route path="pos" element={
+            <ProtectedRoute allowedRoles={['cashier', 'manager']}>
+              <POS />
+            </ProtectedRoute>
+          } />
+          <Route path="inventory" element={
+            <ProtectedRoute allowedRoles={['stocker', 'manager']}>
+              <Inventory />
+            </ProtectedRoute>
+          } />
+          <Route path="reports" element={<Reports />} />
+          <Route path="employees" element={<Employees />} />
+          <Route path="/dashboard/account" element={<YourAccount />} />
+        </Route>
+        
+        {/* Catch all - redirect unknown routes */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </Router>
   );
 }
