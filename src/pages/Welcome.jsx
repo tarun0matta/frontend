@@ -16,7 +16,7 @@ const Navbar = () => (
           <NavLink to="/features">Features</NavLink>
           <NavLink to="/pricing">Pricing</NavLink>
           <NavLink to="/about">About Us</NavLink>
-          <NavLink to="/contact">Contact</NavLink>
+          <NavLink to="/support">Support</NavLink> {/* Add this line */}
         </div>
         <div className="flex items-center space-x-4">
           <NavButton to="/login" variant="outline">Log in</NavButton>
@@ -138,27 +138,17 @@ const Footer = () => {
             <ul className="space-y-2">
               <li><Link to="/features" className="text-gray-300 hover:text-white transition">Features</Link></li>
               <li><Link to="/pricing" className="text-gray-300 hover:text-white transition">Pricing</Link></li>
-              <li><Link to="/about" className="text-gray-300 hover:text-white transition">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-300 hover:text-white transition">Contact</Link></li>
-              <li><Link to="/blog" className="text-gray-300 hover:text-white transition">Blog</Link></li>
               <li><Link to="/support" className="text-gray-300 hover:text-white transition">Support</Link></li>
             </ul>
           </div>
           <div>
-            <h4 className="text-lg font-semibold mb-4">Connect With Us</h4>
+          <h4 className="text-lg font-semibold mb-4">Connect With Us</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-facebook-f mr-2"></i> Facebook</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-twitter mr-2"></i> Twitter</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-linkedin-in mr-2"></i> LinkedIn</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-instagram mr-2"></i> Instagram</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-youtube mr-2"></i> YouTube</a></li>
+              <li><a href="https://www.facebook.com/InfinityPOS" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-facebook-f mr-2"></i> Facebook</a></li>
+              <li><a href="https://www.twitter.com/InfinityPOS" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-twitter mr-2"></i> Twitter</a></li>
+              <li><a href="https://www.instagram.com/InfinityPOS" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition flex items-center"><i className="fab fa-instagram mr-2"></i> Instagram</a></li>
             </ul>
-            <h4 className="text-lg font-semibold mt-6 mb-4">Newsletter</h4>
-            <p className="text-gray-300 mb-2">Stay updated with our latest features and industry news.</p>
-            <form className="flex">
-              <input type="email" placeholder="Enter your email" className="px-3 py-2 bg-gray-700 text-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-              <button type="submit" className="bg-indigo-600 text-white px-4 py-2 rounded-r-md hover:bg-indigo-700 transition">Subscribe</button>
-            </form>
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-700 text-center text-gray-300">

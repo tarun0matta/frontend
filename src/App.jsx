@@ -7,6 +7,7 @@ import Plans from './pages/Plans';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
+import Support from './pages/Support';
 
 // Dashboard & subpages
 import DashboardLayout from './dashboard/Dashboard';
@@ -33,6 +34,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
             <Route path="/forgotpassword" element={<ForgotPassword />} />
+            <Route path="/support" element={<Support />} />
           </Route>
 
           {/* Protected dashboard layout */}
