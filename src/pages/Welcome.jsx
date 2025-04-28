@@ -157,7 +157,7 @@ const Footer = React.forwardRef((props, ref) => {
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li><Link to="/features" className="text-gray-300 hover:text-white transition">Features</Link></li>
-              <li><Link to="/pricing" className="text-gray-300 hover:text-white transition">Pricing</Link></li>
+              <li><Link to="/plans" className="text-gray-300 hover:text-white transition">Pricing</Link></li>
               <li><Link to="/about" className="text-gray-300 hover:text-white transition">About Us</Link></li>
               <li><Link to="/contact" className="text-gray-300 hover:text-white transition">Contact</Link></li>
               <li><Link to="/support" className="text-gray-300 hover:text-white transition">Support</Link></li>
