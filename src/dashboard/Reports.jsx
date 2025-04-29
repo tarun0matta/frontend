@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
   Chart as ChartJS,
@@ -36,6 +37,7 @@ const Reports = () => {
   const [topItems, setTopItems] = useState([]);
   const [range, setRange] = useState('day'); // Changed default to 'day' to match backend
   const token = localStorage.getItem('token');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchReports();
@@ -100,10 +102,28 @@ const Reports = () => {
     'rgba(201, 203, 207, 0.8)'
   ];
 
+  const handleAIPredictorClick = () => {
+    navigate('/dashboard/ai-predictor');
+  };
+
   return (
     <div className="p-6 max-w-7xl mx-auto bg-gray-100">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold text-blue-700">📊 Sales Reports</h2>
+      </div>
+
+      {/* AI Future Predictor Button */}
+      <div className="mb-8 bg-white p-6 rounded-lg shadow-md">
+        <h3 className="text-xl font-semibold mb-4 text-purple-700">🔮 AI Inventory Predictor</h3>
+        <p className="text-gray-600 mb-4">
+          Use our AI-powered tool to predict your future inventory needs based on historical data.
+        </p>
+        <button
+          onClick={handleAIPredictorClick}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+        >
+          Predict Future Inventory
+        </button>
       </div>
 
       {/* Filter */}
