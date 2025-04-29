@@ -2,11 +2,12 @@ import { useState, useEffect, useContext } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FiHome, FiBox, FiShoppingCart, FiBarChart2, FiUsers, FiLogOut, FiMenu,
-  FiUser
+  FiUser, FiShoppingBag, FiInfo, FiPhoneCall
 } from 'react-icons/fi';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import logoImage from '../assets/pica logo.png';
+import StoresDropdown from '../components/StoresDropdown'; // Import StoresDropdown
 
 const BASE_URL = "https://backend-production-9810.up.railway.app";
 
@@ -25,6 +26,7 @@ const Dashboard = () => {
   };
 
   const isOwner = user?.role === 'owner';
+  const isPremium = user?.plan === 'premium';
   const isCashier = user?.role === 'cashier';
   const isStocker = user?.role === 'stocker';
   const isManager = user?.role === 'manager';
@@ -59,16 +61,14 @@ const Dashboard = () => {
   }, [token, logout, navigate]);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <div className={`bg-white shadow-xl transition-all duration-300 ${isOpen ? 'w-64' : 'w-20'} flex flex-col`}>
         <div className="flex items-center justify-between p-4 border-b">
           {isOpen && (
-            <div className="flex items-center space-x-2">
-              <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                Infinity POS
-              </span>
-            </div>
+            <span className="text-xl font-bold text-indigo-600">
+              Infinity POS
+            </span>
           )}
           <button onClick={toggleSidebar} className="p-2 rounded-md hover:bg-gray-200 transition">
             <FiMenu size={24} />
@@ -76,9 +76,9 @@ const Dashboard = () => {
         </div>
 
         {/* Nav Links */}
-        <nav className="flex flex-col gap-2 p-4 flex-grow">
+        <nav className="flex flex-col flex-grow">
           {navItems.map(item => {
-            if (item.roles.includes(user?.role)) {
+            if (item.roles.includes(user?.role) && (!item.premiumOnly || (item.premiumOnly && isPremium))) {
               return (
                 <SidebarLink
                   key={item.to}
@@ -92,36 +92,44 @@ const Dashboard = () => {
             }
             return null;
           })}
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-md mt-auto text-lg font-medium"
-          >
-            <FiLogOut size={24} />
-            {isOpen && 'Logout'}
-          </button>
         </nav>
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition mt-auto"
+        >
+          <FiLogOut size={24} />
+          {isOpen && <span>Logout</span>}
+        </button>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-            <div className="w-24"></div>
-            <Link to="/dashboard" className="flex items-center justify-center">
-              <img src={logoImage} alt="Infinity POS Logo" className="h-10 w-auto" />
-            </Link>
+          {isOwner && isPremium && (
+                <div className="w-48">
+                  <StoresDropdown />
+                </div>
+              )}
+            <div className="flex items-center space-x-4">
+              <img src={logoImage} alt="Infinity POS Logo" className="h-8 w-auto" />
+              
+            </div>
             <div className="flex items-center space-x-4">
               <Link to="/about" className="text-gray-600 hover:text-gray-900 flex items-center">
-              
+                <FiInfo size={20} className="mr-1" />
+                About Us
               </Link>
-              <Link to="/support" className="text-gray-600 hover:text-gray-900 flex items-center">
-              Support
+              <Link to="/contact" className="text-gray-600 hover:text-gray-900 flex items-center">
+                <FiPhoneCall size={20} className="mr-1" />
+                Contact
               </Link>
             </div>
           </div>
         </header>
-        <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-          <div className="px-4 py-6 sm:px-0">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100">
+          <div className="container mx-auto px-6 py-8">
             <Outlet />
           </div>
         </main>
@@ -133,7 +141,7 @@ const Dashboard = () => {
 const SidebarLink = ({ to, icon, label, isOpen, isActive }) => (
   <Link
     to={to}
-    className={`flex items-center gap-4 px-4 py-3 rounded-md transition text-lg font-medium 
+    className={`flex items-center gap-4 px-4 py-3 transition text-lg font-medium 
       ${isActive ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:bg-gray-100'}`}
   >
     <span>{icon}</span>
