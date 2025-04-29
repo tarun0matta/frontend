@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -61,9 +61,24 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const googleButtonRef = useRef(null);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) navigate('/dashboard');
+
+    // Initialize Google OAuth
+    if (window.google && googleButtonRef.current) {
+      window.google.accounts.id.initialize({
+        client_id: '937500943501-poolgbhil5a4vjcbkand61d4r7p6910u.apps.googleusercontent.com', // Replace with your actual Google Client ID
+        callback: handleGoogleLogin
+      });
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        width: googleButtonRef.current.offsetWidth
+      });
+    }
   }, [navigate]);
 
   const handleLogin = async (e) => {
@@ -80,6 +95,42 @@ const Login = () => {
     } catch (err) {
       console.error('❌ Login error:', err);
       setError(err.response?.data?.error || 'Login failed. Please check your credentials and try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (googleResponse) => {
+    setLoading(true);
+    setError('');
+    
+    if (!googleResponse.credential) {
+      console.error('No credential received from Google');
+      setError('Google Login failed. Please try again.');
+      setLoading(false);
+      return;
+    }
+  
+    try {
+      const res = await axios.post(`${BASE_URL}/google-login`, 
+        { token: googleResponse.credential }, 
+        { headers: { 'Content-Type': 'application/json' } }
+      );
+      
+      const { token, user } = res.data;
+      
+      if (!token || !user) {
+        throw new Error('Invalid response from server');
+      }
+  
+      login(token, user);
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('❌ Google Login error:', err);
+      if (err.response) {
+        console.error('Server responded with:', err.response.data);
+      }
+      setError(err.response?.data?.error || 'Google Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -104,83 +155,77 @@ const Login = () => {
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow-2xl sm:rounded-lg sm:px-10">
-            <form className="space-y-6" onSubmit={handleLogin}>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                  Email address
-                </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaEnvelope className="h-5 w-5 text-indigo-500" />
-                  </div>
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                    placeholder="you@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
+          <form className="space-y-6" onSubmit={handleLogin}>
+  <div>
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <FaEnvelope className="text-indigo-500" />
+      </div>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        autoComplete="email"
+        required
+        className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm pl-10"
+        placeholder="Email address"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+    </div>
+  </div>
 
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                  Password
-                </label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaLock className="h-5 w-5 text-indigo-500" />
-                  </div>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-              </div>
+  <div>
+    <div className="relative">
+      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <FaLock className="text-indigo-500" />
+      </div>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        autoComplete="current-password"
+        required
+        className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm pl-10"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+    </div>
+  </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                  />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                    Remember me
-                  </label>
-                </div>
+  <div className="flex items-center justify-between">
+    <div className="flex items-center">
+      <input
+        id="remember-me"
+        name="remember-me"
+        type="checkbox"
+        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+      />
+      <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+        Remember me
+      </label>
+    </div>
 
-                <div className="text-sm">
-                  <Link to="/forgotpassword" className="font-medium text-indigo-600 hover:text-indigo-500 transition duration-150 ease-in-out">
-                    Forgot your password?
-                  </Link>
-                </div>
-              </div>
+    <div className="text-sm">
+      <Link to="/forgotpassword" className="font-medium text-indigo-600 hover:text-indigo-500 transition duration-150 ease-in-out">
+        Forgot your password?
+      </Link>
+    </div>
+  </div>
 
-              {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+  {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
 
-              <div>
-                <button
-                  type="submit"
-                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
-                  disabled={loading}
-                >
-                  {loading ? 'Logging in...' : 'Log in'}
-                </button>
-              </div>
-            </form>
+  <div>
+    <button
+      type="submit"
+      className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+      disabled={loading}
+    >
+      {loading ? 'Logging in...' : 'Log in'}
+    </button>
+  </div>
+</form>
 
             <div className="mt-6">
               <div className="relative">
@@ -195,21 +240,11 @@ const Login = () => {
               </div>
 
               <div className="mt-6 grid grid-cols-3 gap-3">
-                <div>
-                  <a href="#" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <FaGoogle className="h-5 w-5" />
-                  </a>
+                <div className="col-span-3">
+                  <div ref={googleButtonRef} className="w-full h-10"></div>
                 </div>
-                <div>
-                  <a href="#" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <FaFacebook className="h-5 w-5" />
-                  </a>
-                </div>
-                <div>
-                  <a href="#" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                    <FaApple className="h-5 w-5" />
-                  </a>
-                </div>
+               
+                
               </div>
             </div>
           </div>

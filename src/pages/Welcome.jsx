@@ -14,7 +14,7 @@ const Navbar = ({ scrollToFooter }) => (
         </Link>
         <div className="hidden md:flex items-center space-x-8">
           <NavLink onClick={() => scrollToFooter('features')}>Features</NavLink>
-          <NavLink to="/pricing">Pricing</NavLink>
+          <NavLink to="/plans">Pricing</NavLink> {/* Updated this line */}
           <NavLink onClick={() => scrollToFooter('about')}>About Us</NavLink>
           <NavLink to="/support">Support</NavLink>
         </div>
@@ -75,20 +75,20 @@ const Welcome = () => {
       <Navbar scrollToFooter={scrollToSection} />
       
       {/* Hero Section */}
-      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 mt-20">
-        <div className="max-w-4xl w-full text-center">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
-            Transform Your Business with <span className="text-indigo-600">Infinity POS</span>
-          </h1>
-          <p className="text-xl sm:text-2xl text-gray-600 mb-10 leading-relaxed">
-            Streamline operations, boost sales, and gain powerful insights with our cutting-edge point of sale system.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-6 mb-12">
-            <Button to="/login" primary>Log in</Button>
-            <Button to="/plans">Get Started</Button>
-          </div>
-        </div>
-      </main>
+      <main className="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-85 pb-20"> {/* Updated padding here */}
+  <div className="max-w-4xl w-full text-center">
+    <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 mb-6">
+      Transform Your Business with <span className="text-indigo-600">Infinity POS</span>
+    </h1>
+    <p className="text-xl sm:text-2xl text-gray-600 mb-10 leading-relaxed">
+      Streamline operations, boost sales, and gain powerful insights with our cutting-edge point of sale system.
+    </p>
+    <div className="flex flex-col sm:flex-row justify-center gap-6 mb-12">
+      <Button to="/login" primary>Log in</Button>
+      <Button to="/plans">Get Started</Button>
+    </div>
+  </div>
+</main>
 
       {/* Features Section */}
       <section ref={featuresRef} className="py-16 bg-white">

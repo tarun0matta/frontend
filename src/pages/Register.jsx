@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useSpring, animated } from 'react-spring';
-import { FaUser, FaEnvelope, FaLock, FaCalendar, FaPhone, FaBuilding } from 'react-icons/fa';
+import { FaUser, FaEnvelope, FaLock, FaCalendar, FaPhone, FaBuilding, FaGoogle, FaDollarSign } from 'react-icons/fa';
 import logoImage from '../assets/pica logo.png';
 
 const Navbar = () => {
@@ -72,6 +72,23 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const googleButtonRef = useRef(null);
+
+  useEffect(() => {
+    if (window.google && googleButtonRef.current) {
+      window.google.accounts.id.initialize({
+        client_id: 'YOUR_GOOGLE_CLIENT_ID', // Replace with your actual Google Client ID
+        callback: handleGoogleRegister
+      });
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        width: googleButtonRef.current.offsetWidth,
+        text: 'signup_with'
+      });
+    }
+  }, []);
+
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -85,13 +102,32 @@ const Register = () => {
         headers: { 'Content-Type': 'application/json' }
       });
       console.log('✅ Registered:', res.data);
-      // Show success message
       alert('Registration successful! Please log in.');
-      // Redirect to the login page
       navigate('/login');
     } catch (err) {
       console.error('❌ Registration error:', err);
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleRegister = async (response) => {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await axios.post(`${BASE_URL}/google-register`, { 
+        token: response.credential,
+        plan: formData.plan
+      }, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log('✅ Registered with Google:', res.data);
+      alert('Registration successful! Please log in.');
+      navigate('/login');
+    } catch (err) {
+      console.error('❌ Google Registration error:', err);
+      setError(err.response?.data?.error || 'Google Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -105,7 +141,7 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col">
       <Navbar />
-      <div className="flex-grow flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+      <div className="flex-grow flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 mt-20">
         <animated.div style={fadeIn} className="max-w-md w-full space-y-8">
           <div>
             <img className="mx-auto h-16 w-auto" src={logoImage} alt="Infinity POS" />
@@ -122,18 +158,17 @@ const Register = () => {
           
           <div className="bg-white shadow-md rounded-lg p-8">
             <form className="space-y-6" onSubmit={handleSubmit}>
-              <div className="rounded-md shadow-sm -space-y-px">
-                <InputField
-                  icon={<FaUser className="text-indigo-500" />}
-                  type="text"
-                  name="name"
-                  placeholder="Full Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
+              <InputField
+                
+                type="text"
+                name="name"
+                placeholder="Full Name"
+                value={formData.name}
+                onChange={handleChange}
+                required
               />
               <InputField
-                icon={<FaEnvelope className="text-indigo-500" />}
+                
                 type="email"
                 name="email"
                 placeholder="Email Address"
@@ -142,7 +177,7 @@ const Register = () => {
                 required
               />
               <InputField
-                icon={<FaLock className="text-indigo-500" />}
+                
                 type="password"
                 name="password"
                 placeholder="Password"
@@ -151,7 +186,7 @@ const Register = () => {
                 required
               />
               <InputField
-                icon={<FaCalendar className="text-indigo-500" />}
+                
                 type="date"
                 name="dob"
                 value={formData.dob}
@@ -159,7 +194,7 @@ const Register = () => {
                 required
               />
               <InputField
-                icon={<FaPhone className="text-indigo-500" />}
+                
                 type="tel"
                 name="phone"
                 placeholder="Phone Number (optional)"
@@ -167,7 +202,7 @@ const Register = () => {
                 onChange={handleChange}
               />
               <div className="relative">
-                <FaBuilding className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-500" />
+                <FaDollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-indigo-500" />
                 <select
                   name="plan"
                   value={formData.plan}
@@ -180,7 +215,7 @@ const Register = () => {
                 </select>
               </div>
               <InputField
-                icon={<FaBuilding className="text-indigo-500" />}
+                
                 type="text"
                 name="business_name"
                 placeholder="Business Name"
@@ -188,32 +223,48 @@ const Register = () => {
                 onChange={handleChange}
                 required
               />
-            </div>
 
-            {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
+              {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
 
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
-                disabled={loading}
-              >
-                {loading ? 'Creating your account...' : 'Create Account'}
-              </button>
+              <div>
+                <button
+                  type="submit"
+                  className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                  disabled={loading}
+                >
+                  {loading ? 'Creating your account...' : 'Create Account'}
+                </button>
+              </div>
+            </form>
+
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">
+                    Or register with
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <div ref={googleButtonRef} className="w-full h-10"></div>
+              </div>
             </div>
-          </form>
-        </div>
-        
-        <p className="mt-2 text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500 transition duration-150 ease-in-out">
-            Log in
-          </Link>
-        </p>
-      </animated.div>
+          </div>
+          
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Already have an account?{' '}
+            <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500 transition duration-150 ease-in-out">
+              Log in
+            </Link>
+          </p>
+        </animated.div>
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 const InputField = ({ icon, type, name, placeholder, value, onChange, required }) => (
@@ -229,9 +280,9 @@ const InputField = ({ icon, type, name, placeholder, value, onChange, required }
       value={value}
       onChange={onChange}
       required={required}
-      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm pl-10"
-    />
-  </div>
+      className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-">
+  </input>
+      </div>
 );
 
 export default Register;
