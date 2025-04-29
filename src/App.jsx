@@ -15,7 +15,8 @@ import Employees from './dashboard/Employees';
 import Unauthorized from './dashboard/Unauthorized';
 import ProtectedRoute from './components/ProtectedRoute'; // Import corrected ProtectedRoute
 import YourAccount from './dashboard/YourAccount';
-
+import Transactions from './dashboard/Transactions'; // Add this import
+import ChatbotAssistant from './components/ChatbotAssistant'; // Add this import
 function App() {
   const { user } = useContext(AuthContext);
 
@@ -48,6 +49,7 @@ function App() {
           } />
           <Route path="reports" element={<Reports />} />
           <Route path="employees" element={<Employees />} />
+          <Route path="transactions" element={<Transactions />} />
           <Route path="/dashboard/account" element={<YourAccount />} />
         </Route>
         

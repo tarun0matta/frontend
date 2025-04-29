@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   FiHome, FiBox, FiShoppingCart, FiBarChart2, FiUsers, FiLogOut, FiMenu,
-  FiUser, FiShoppingBag, FiInfo, FiPhoneCall
+  FiUser, FiShoppingBag, FiInfo, FiPhoneCall, FiFileText
 } from 'react-icons/fi';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -36,6 +36,7 @@ const Dashboard = () => {
     { to: '/dashboard/pos', icon: <FiShoppingCart size={24} />, label: 'POS', roles: ['owner', 'cashier', 'manager'] },
     { to: '/dashboard/inventory', icon: <FiBox size={24} />, label: 'Inventory', roles: ['owner', 'stocker', 'manager'] },
     { to: '/dashboard/reports', icon: <FiBarChart2 size={24} />, label: 'Reports', roles: ['owner'] },
+    { to: '/dashboard/transactions', icon: <FiFileText size={24} />, label: 'Transactions', roles: ['owner', 'cashier', 'manager'] },
     { to: '/dashboard/employees', icon: <FiUsers size={24} />, label: 'Employees', roles: ['owner'] },
     { to: '/dashboard/account', icon: <FiUser size={24} />, label: 'Account', roles: ['owner', 'cashier', 'stocker', 'manager'] }
   ];
